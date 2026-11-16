@@ -46,15 +46,21 @@ def token():
 
 def read_doc():
     if not STATE_PATH.exists(): return {'revision':0,'state':None,'updatedAt':None}
-    with open(STATE_PATH,'r',encoding='utf-8') as f:return json.load(f)
+    with open(STATE_PATH,'r',encoding='utf-8') as f:doc=json.load(f)
+    if isinstance(doc.get('state'),dict):
+        doc['state']={k:v for k,v in doc['state'].items() if k in ('tx','alerts','events','monthlyPlan','goal','ticker','refreshMinutes','sim')}
+    return doc
 
 def validate(state):
     if not isinstance(state,dict): raise ValueError('Ongeldige staat')
-    for k in ('tx','holdings','alerts','events'):
+    for k in ('tx','alerts','events'):
         if not isinstance(state.get(k),list): raise ValueError(f'Veld {k} moet een lijst zijn')
     for t in state['tx']:
         if not isinstance(t,dict) or not isinstance(t.get('id'),str) or len(t['id'])>160:
             raise ValueError('Ongeldige transactie')
+    # Market data (quote/holdings/history) are never synchronized as private state.
+    for forbidden in ('quote','history','holdings','intraday'):
+        if forbidden in state:raise ValueError('Marktgegevens mogen niet in privé-synchronisatie staan')
     # Prevent recursive/prototype-pollution-shaped payloads from becoming client state.
     def check(obj,depth=0):
         if depth>15:raise ValueError('Gegevensstructuur te diep')

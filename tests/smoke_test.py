@@ -4,6 +4,7 @@ from http.server import ThreadingHTTPServer
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from html.parser import HTMLParser
+from unittest.mock import patch
 root=Path(__file__).resolve().parents[1]/'spyi_desk'
 sys.path.insert(0,str(root))
 d=tempfile.TemporaryDirectory()
@@ -47,5 +48,21 @@ try:
     assert a.sync.STATE_PATH.exists()
     with a.STORE.conn() as db: assert db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='market_snapshot'").fetchone()
     print('PASS SQLite initialized')
+    status,body,_=request(external,'/api/holdings/refresh',method='POST',obj={})
+    assert status==401, (status,body)
+    print('PASS unauthorized mobile cannot trigger provider download')
+    with patch.object(a.STORE,'update_holdings',return_value={'count':6000}) as fake:
+        status,body,_=request(home,'/api/holdings/refresh',method='POST',obj={})
+        assert status==202 and json.loads(body)['started'], (status,body)
+        for _ in range(30):
+            if fake.called and not a._HOLDINGS_REFRESH_LOCK.locked():break
+            time.sleep(.02)
+        assert fake.called
+        status,body,_=request(home,'/api/holdings/refresh',method='POST',obj={})
+        assert status==429 and json.loads(body).get('retryAfterSeconds',0)>0
+        print('PASS ingress holdings refresh and cooldown')
+    status,body,_=request(home,'/api/data/status')
+    assert status==200 and 'holdingsRefreshRunning' in json.loads(body)
+    print('PASS holdings status diagnostics')
 finally:
     ingress.shutdown();phone.shutdown();ingress.server_close();phone.server_close();d.cleanup()

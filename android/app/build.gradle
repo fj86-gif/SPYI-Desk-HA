@@ -1,0 +1,28 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'be.spyi.desk'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'be.spyi.desk'
+        minSdk 26
+        targetSdk 35
+        versionCode 7
+        versionName '0.7.0-beta'
+    }
+    buildTypes {
+        release { minifyEnabled false; debuggable false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies { implementation 'androidx.webkit:webkit:1.18.0' }
+
+tasks.register('syncWebAssets', Copy) {
+    from('../../spyi_desk/SPYI_Dashboard.html')
+    into('src/main/assets')
+    rename('SPYI_Dashboard.html','index.html')
+}
+tasks.named('preBuild') { dependsOn('syncWebAssets') }

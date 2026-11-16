@@ -26,3 +26,9 @@ Alle scenario-rendementen zijn berekende hypothesen, geen voorspellingen. De app
 
 ## Nieuw: rendementvoorstel uit echte historie
 De inlegsimulator toont geannualiseerde SPYI.DE-koersrendementen in EUR over 1, 3 en 5 jaar indien voldoende **geverifieerde** dagelijkse historische koersen geladen zijn. Kies het gewenste percentage handmatig. Vijf jaar wordt als historische referentie aangeduid; eerdere rendementen zijn geen voorspellingen. Als de koersbron faalt of gegevens ouder zijn dan 14 dagen, geeft de app geen toepasbaar voorstel.
+
+## Nieuw in v0.6.2 — ontbrekende fondsposities
+
+Onder **Alle aandelen** zie je nu de feitelijke foutmelding van de holdings-download. Klik **Automatisch ophalen** om meteen opnieuw te proberen. Mislukte automatische downloads worden na 30 minuten opnieuw geprobeerd in plaats van na 24 uur. Het downloadverzoek gebruikt normale browserheaders; de downloadlink blijft de officiële State Street-link.
+
+De externe gegevensbron is nog niet op iedere Home Assistant-installatie gevalideerd. Als posities na opnieuw ophalen ontbreken, stuur dan de foutmelding die nu op het scherm verschijnt. Dit is nadrukkelijk een beta, geen gegarandeerde productieversie.

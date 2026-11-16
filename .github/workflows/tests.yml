@@ -1,4 +1,4 @@
-name: Smoke test
+name: SPYI Desk regression tests
 on: [push, pull_request]
 jobs:
   tests:
@@ -8,4 +8,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python -m pip install 'openpyxl==3.1.5'
+      - run: python -m py_compile spyi_desk/*.py
       - run: python tests/smoke_test.py
+      - run: python tests/market_test.py

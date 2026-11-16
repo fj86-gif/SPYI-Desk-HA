@@ -345,6 +345,7 @@ function price(){const p=state.quote?.price;return p!=null&&Number.isFinite(+p)&
 function portfolio(){const ordered=[...state.tx].sort((a,b)=>a.date.localeCompare(b.date));let shares=0,cost=0,realized=0,totalBuy=0,fees=0;for(const t of ordered){const n=+t.shares,p=+t.price,f=+t.fees||0;fees+=f;if(t.type==='buy'){shares+=n;cost+=n*p+f;totalBuy+=n*p+f}else if(t.type==='sell'&&shares>0&&n<=shares+1e-8){let costOut=cost/shares*n;cost-=costOut;shares-=n;realized+=n*p-f-costOut}}shares=Math.max(0,shares);const value=shares?(Number.isFinite(price())?shares*price():NaN):0,pl=Number.isFinite(value)?value-cost:NaN;return {shares,cost,realized,pl,value,avg:shares?cost/shares:0,paid:totalBuy,fees}}
 function validateTransactionLedger(trades){
  if(!Array.isArray(trades)||trades.length>10000)return 'Ongeldig aantal transacties';
+ if(trades.some(t=>!t||typeof t.date!=='string'))return 'Transactie ontbreekt of bevat geen datum';
  const rows=[...trades].sort((a,b)=>a.date.localeCompare(b.date)||((a.type==='buy'?0:1)-(b.type==='buy'?0:1)));
  const ids=new Set();let held=0;
  for(const t of rows){
@@ -362,7 +363,7 @@ function xirr(){
  const flows=state.tx.map(t=>({date:new Date(t.date+'T12:00:00Z'),amount:t.type==='buy'?-(+t.shares*+t.price + +t.fees):(+t.shares*+t.price - +t.fees)}));
  if(p.shares>1e-8){
   const asOf=state.quote?.asOf?new Date(state.quote.asOf):new Date();
-  if(Number.isNaN(asOf.getTime()))return null;
+  if(Number.isNaN(asOf.getTime())||flows.some(f=>f.date>asOf))return null;
   flows.push({date:asOf,amount:p.value});
  }
  flows.sort((a,b)=>a.date-b.date);
@@ -370,6 +371,7 @@ function xirr(){
  const first=flows[0].date,days=(flows[flows.length-1].date-first)/86400000;
  if(days<30)return null;
  const npv=r=>flows.reduce((sum,f)=>sum+f.amount/Math.pow(1+r,(f.date-first)/86400000/365.25),0);
+ if(Math.abs(npv(0))<0.0000001)return 0;
  const sample=[-.9999,-.99,-.95,-.9,-.75,-.5,-.25,-.1,-.01,0,.01,.05,.1,.2,.4,.7,1,2,5,10,25,50,100,500,1000];
  const brackets=[];
  for(let i=1;i<sample.length;i++){const lo=sample[i-1],hi=sample[i],a=npv(lo),b=npv(hi);if(Number.isFinite(a)&&Number.isFinite(b)&&(a===0||b===0||Math.sign(a)!==Math.sign(b)))brackets.push([lo,hi]);}

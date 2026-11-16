@@ -32,3 +32,10 @@ De inlegsimulator toont geannualiseerde SPYI.DE-koersrendementen in EUR over 1, 
 Onder **Alle aandelen** zie je nu de feitelijke foutmelding van de holdings-download. Klik **Automatisch ophalen** om meteen opnieuw te proberen. Mislukte automatische downloads worden na 30 minuten opnieuw geprobeerd in plaats van na 24 uur. Het downloadverzoek gebruikt normale browserheaders; de downloadlink blijft de officiële State Street-link.
 
 De externe gegevensbron is nog niet op iedere Home Assistant-installatie gevalideerd. Als posities na opnieuw ophalen ontbreken, stuur dan de foutmelding die nu op het scherm verschijnt. Dit is nadrukkelijk een beta, geen gegarandeerde productieversie.
+
+
+## v0.6.3: oplossing voor lege aandelenlijst
+
+De officiële dagelijkse SPDR/State Street EMEA-werkmap gebruikt kolommen als `Security Name`, `Percent of Fund`, `Trade Country Name`, `Sector Classification` en `Local Price`. De parser herkent deze nu. Testwerkboeken met 6.100 synthetische aandelen, inclusief het volledige download-naar-database-traject, slagen. Dit bewijst nog niet dat de actuele externe SPYI-download op iedere HA-machine werkt.
+
+Na het updaten: SPYI Desk → Alle aandelen → **Automatisch ophalen**. Als het toch faalt, stuur de exacte foutmelding. Geef nooit je API-sleutel of persoonlijke transacties door.

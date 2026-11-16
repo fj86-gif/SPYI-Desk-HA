@@ -1,7 +1,7 @@
 name: SPYI Desk
-version: "0.6.3"
+version: "0.7.0"
 slug: spyi_desk
-description: BETA - diagnosetools voor officiële SPYI-posities
+description: BETA - veiligere transacties, XIRR, marktcache en Android-broncode
 arch:
   - amd64
 startup: application

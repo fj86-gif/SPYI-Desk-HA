@@ -17,3 +17,4 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/history_return_test.js
+      - run: node tests/finance_regression_test.js

@@ -1,3 +1,14 @@
+# SPYI Desk — 0.7.0 bèta (géén stabiele v1.0)
+
+De Home Assistant-app is bijgewerkt voor veiligere portefeuilleregistratie, XIRR-berekening,
+automatische extra back-upversies, langere historische koersen en aanvullende regressietests.
+De Android-broncode en een automatische **unsigned** compile-test zijn toegevoegd;
+er is nog **geen installeerbare, ondertekende Android APK**.
+
+**Voor de officiële status en exacte productieblokkades, zie [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md).**
+Deze repository is openbaar: upload hier geen MeDirect-documenten, transactiebestanden, tokens of privésleutels.
+
+
 # SPYI Desk voor Home Assistant — v0.6.1 bèta
 
 SPYI Desk draait op Home Assistant OS (amd64) via Ingress en bewaart persoonlijke gegevens lokaal.

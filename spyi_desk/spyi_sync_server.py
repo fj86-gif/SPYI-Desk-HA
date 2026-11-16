@@ -106,7 +106,16 @@ def apply_update(base_revision,state):
     with LOCK:
         doc=read_doc()
         if doc['revision'] != base_revision: return False,doc
+        if doc.get('state')==state:
+            return True,doc
         new={'revision':doc['revision']+1,'state':state,'updatedAt':datetime.now(timezone.utc).isoformat()}
+        if doc.get('revision',0)>0:
+            folder=DATA_DIR/'state_versions'
+            backup=folder/f"state_{doc['revision']:08d}.json"
+            if not backup.exists():
+                atomic_write(backup,json.dumps(doc,ensure_ascii=False,separators=(',',':')))
+            retained=sorted(folder.glob('state_*.json'))
+            for old in retained[:-10]:old.unlink()
         atomic_write(STATE_PATH,json.dumps(new,ensure_ascii=False,separators=(',',':')))
         return True,new
 

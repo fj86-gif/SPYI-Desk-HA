@@ -39,13 +39,13 @@ try:
     status,body,_=request(external,'/api/sync/state',headers={'Authorization':'Bearer bad'});assert status==401
     status,body,_=request(external,'/api/sync/state',headers={'Authorization':'Bearer '+token});assert status==200 and json.loads(body)['revision']==0
     print('PASS Mobile access control')
-    state={'tx':[{'id':'t1','date':'2026-10-26','shares':8,'price':11.63875,'type':'buy','fees':0}], 'holdings':[],'alerts':[],'events':[]}
+    state={'tx':[{'id':'t1','date':'2026-10-26','shares':8,'price':11.63875,'type':'buy','fees':0}], 'alerts':[],'events':[]}
     status,body,_=request(home,'/api/sync/state',method='PUT',obj={'baseRevision':0,'state':state});assert status==200
     status,body,_=request(external,'/api/sync/state',headers={'Authorization':'Bearer '+token})
     assert json.loads(body)['state']==state
     print('PASS Cross-device write/read persisted')
     assert a.sync.STATE_PATH.exists()
-    with a.open_db() as db: assert db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='quotes'").fetchone()
+    with a.STORE.db() as db: assert db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='snapshots'").fetchone()
     print('PASS SQLite initialized')
 finally:
     ingress.shutdown();phone.shutdown();ingress.server_close();phone.server_close();d.cleanup()

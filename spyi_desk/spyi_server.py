@@ -54,10 +54,10 @@ def yahoo(symbol: str, period='1d', interval='1d') -> dict:
 
 def api_quote(symbol):
     r=yahoo(symbol, '1d','1d');m=r.get('meta',{})
-    p=m.get('regularMarketPrice') or m.get('previousClose') or m.get('chartPreviousClose')
-    if not p: raise RuntimeError('Geen geldige koers ontvangen')
+    p=m.get('regularMarketPrice')
+    if not isinstance(p,(int,float)) or p<=0: raise RuntimeError('Geen geverifieerde recente beurskoers ontvangen')
     t=m.get('regularMarketTime')
-    return {'symbol':symbol,'price':p,'previousClose':m.get('previousClose') or m.get('chartPreviousClose'),
+    return {'symbol':symbol,'price':p,'previousClose':m.get('previousClose') if isinstance(m.get('previousClose'),(int,float)) else m.get('chartPreviousClose'),
             'high52':m.get('fiftyTwoWeekHigh'),'low52':m.get('fiftyTwoWeekLow'),
             'asOf': datetime.fromtimestamp(t,timezone.utc).isoformat() if t else None,
             'currency':m.get('currency','EUR'),

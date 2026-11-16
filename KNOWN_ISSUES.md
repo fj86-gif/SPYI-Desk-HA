@@ -1,16 +1,13 @@
-# Nog te bouwen / te testen vóór productie
+# Release v0.6.0 — nog niet productieklaar
 
-- [ ] Echte HA OS-installatie met live Ingress-basepath, Supervisor, herstart, upgrade en back-up herstel.
-- [ ] Gratis SPYI.DE-koersbron: echte data op handelsdagen, rate-limits, betrouwbaar dataversheid tonen.
-- [ ] Automatische dagelijkse officiële SPDR holdings-downloader (met validatie en bron/peildatum).
-- [ ] Betaalbare/gratis betrouwbare bulk-dagkoersen voor duizenden onderliggende aandelen.
-- [ ] Datastromen en berekeningen controleren (valuta, prijspeildatum, XIRR, ETF-bijdrage, kosten en belastingen).
-- [ ] MeDirect PDF importer implementeren op geanonimiseerd reëel voorbeeld en per regel laten bevestigen.
-- [ ] Android release APK bouwen en op echte telefoon testen.
-- [ ] Achtergrondnotificaties + alert-afhandeling Android (betrouwbare trigger bij gesloten app).
-- [ ] HTTPS/Tailscale koppeling end-to-end testen; poort 8765 standaard uit laten.
-- [ ] Multi-device conflict/resync/restore testen.
-- [ ] Beveiligingsonderzoek en dependency scan; foutafhandeling bij mislukte data-updates.
-- [ ] Schermbreedtes, toegankelijkheid, data-export/herstel, gebruikersacceptatie.
+**Gecontroleerd in lokale tests:** app-API, tokenautorisatie, gedeelde transactiestatus, aanmaken en bewaren van de marktcache, bewaren van echte gedateerde koersen bij provider-uitval, afkeuren van een ongeldig holdingsbestand.
 
-De GitHub ZIP is een **publicatievoorbereide beta** en geen geverifieerde stabiele release.
+**Nog te verifiëren:** installatie en Docker-start op jouw Home Assistant OS, werkelijke response van het Yahoo-chartendpoint, downloaden en volledig parsen van de actuele State Street XLSX, herstel van app-back-ups op HA, mobiele synchronisatie via private HTTPS, front-end op echte telefoons.
+
+**Nog niet gebouwd of afhankelijk van ontbrekende externe input:** release Android APK en Android pushmeldingen; MeDirect PDF-import zonder geanonimiseerd voorbeeldbewijs; 24/7 koersalerts; externe bedrijfskalender; gegarandeerde 15-minutenkoersen voor alle duizenden holdings.
+
+**Datakwaliteit:** dagelijkse lokale prijzen in State Street-Excel zijn geen 15-minutenkoersen. De experimentele top-10 individuele tickers kunnen onjuist verwijzen naar buitenlandse handelsplaatsen. Gebruikers moeten beursnotering en valuta verifiëren.
+
+**Privédata:** ingevoerde transacties worden lokaal opgeslagen en niet in GitHub geplaatst. Fictieve begintransacties ontbreken bewust; vul je echte aankopen zelf in. Bij een update wordt een oude demo-koers/historie gewist maar je echte transacties bewaard.
+
+Alle rendementsprognoses en Monte Carlo-scenario's zijn wiskundige simulaties, geen koersdata of financieel advies.

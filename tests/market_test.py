@@ -24,6 +24,17 @@ def check():
             else:assert False,'update should fail'
         prev,code=store.response('quote');assert code==200 and prev['price']==11.69 and prev['lastUpdateError']['message'].startswith('429')
         print('PASS stale-but-confirmed quote, source failure preserved')
+        for altered in [
+            {'symbol':'SPYI.DE','price':11.0,'asOf':ts,'currency':'USD','source':'Wrong Currency'},
+            {'symbol':'SPYI.DE','price':11.0,'asOf':'2026-11-12T16:35:56+00:00','currency':'EUR','source':'Older Quote'}
+        ]:
+            with patch('spyi_server.api_quote',return_value=altered):
+                try:store.update_quote()
+                except ValueError:pass
+                else:assert False,'Unsafe quote was accepted'
+        assert store.response('quote')[0]['price']==11.69
+        print('PASS wrong-currency and older quotes are never committed')
+
         points=[{'date':f'2026-10-{i:02d}','close':10+i/100} for i in range(1,30)]
         with patch('spyi_server.api_chart',return_value={'symbol':'SPYI.DE','source':'Yahoo Finance','points':points}):
             store.update_history()

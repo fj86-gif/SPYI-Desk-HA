@@ -4,13 +4,13 @@ Een lokale, experimentele SPYI-portefeuilleviewer als Home Assistant-app.
 
 > ⚠️ Dit is geen productieklare app. Automatische gratis koersfeeds, volledige SPYI-aandelenimport, MeDirect PDF-import, Android APK en hardwarematige integratie zijn niet end-to-end getest.
 
-## GitHub-publicatie
+## GitHub-repository
 
-Publiceer de **inhoud** van deze map (niet de ZIP zelf) in de root van een nieuwe openbare repository, bijvoorbeeld `SPYI-Desk-HA`. Home Assistant zoekt `repository.yaml` in de root en `spyi_desk/config.yaml` in de app-map.
+Deze repository is de publieke betaversie op https://github.com/fj86-gif/SPYI-Desk-HA.
 
 ## Installatie vanaf Android
 
-Home Assistant → Instellingen → Apps → App installeren → ⋮ → Repositories → voer de **werkelijk gepubliceerde** repository-URL in. Na toevoegen verschijnt **SPYI Desk** in de appwinkel.
+Home Assistant → Instellingen → Apps → App installeren → ⋮ → Repositories → voer `https://github.com/fj86-gif/SPYI-Desk-HA` in. Na toevoegen verschijnt **SPYI Desk** in de appwinkel.
 
 ## Teststatus
 

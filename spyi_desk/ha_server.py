@@ -65,7 +65,7 @@ def market_get(handler,path):
     if route.path=='/api/chart':
         symbol=query.get('symbol',[SPYI_SYMBOL])[0]
         period=query.get('range',['5y'])[0];interval=query.get('interval',['1d'])[0]
-        if symbol==SPYI_SYMBOL and interval=='1d' and period=='5y':
+        if symbol==SPYI_SYMBOL and interval=='1d' and period in ('5y','max'):
             data,code=STORE.response('history');handler.reply(data,code)
         else:
             try:handler.reply(market.api_chart(symbol,period,interval))

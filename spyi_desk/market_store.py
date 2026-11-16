@@ -129,7 +129,10 @@ class MarketStore:
 
     def update_holdings(self):
         try:
-            req=Request(HOLDINGS_URL, headers={'User-Agent':'Mozilla/5.0 (compatible; SPYIDesk/0.6 personal local dashboard)', 'Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/octet-stream'})
+            req=Request(HOLDINGS_URL, headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+                                       'Accept':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/octet-stream,*/*',
+                                       'Accept-Language':'en-GB,en;q=0.9',
+                                       'Referer':'https://www.ssga.com/ie/en_gb/institutional/etfs/state-street-spdr-msci-all-country-world-investable-market-ucits-etf-acc-spyi-gy'})
             with urlopen(req, timeout=45) as resp:
                 raw=resp.read(MAX_HOLDINGS_BYTES+1)
             if len(raw)>MAX_HOLDINGS_BYTES or not raw.startswith(b'PK'):

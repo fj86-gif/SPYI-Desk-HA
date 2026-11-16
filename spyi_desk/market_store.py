@@ -79,11 +79,16 @@ class MarketStore:
     def update_quote(self):
         try:
             q = spyi_server.api_quote(SPYI_SYMBOL)
-            if q.get('symbol') != SPYI_SYMBOL or not isinstance(q.get('price'), (float,int)) or q['price'] <= 0 or not q.get('asOf'):
+            if q.get('symbol') != SPYI_SYMBOL or not isinstance(q.get('price'), (float,int)) or q['price'] <= 0 or not q.get('asOf') or q.get('currency') != 'EUR':
                 raise ValueError('Geen gedateerde, geldige SPYI.DE-koers ontvangen')
             timestamp = datetime.fromisoformat(q['asOf'].replace('Z','+00:00'))
             if timestamp.tzinfo is None or timestamp > datetime.now(timezone.utc):
                 raise ValueError('Ongeldig tijdstip beurskoers')
+            previous=self.snapshot('quote')
+            if previous and previous.get('asOf'):
+                previous_time=datetime.fromisoformat(previous['asOf'].replace('Z','+00:00'))
+                if timestamp<previous_time:
+                    raise ValueError('Koersbron leverde een oudere koers dan al opgeslagen')
             q['demo'] = False
             self._put('quote', q)
             return q
@@ -93,7 +98,7 @@ class MarketStore:
 
     def update_history(self):
         try:
-            chart = spyi_server.api_chart(SPYI_SYMBOL, '5y','1d')
+            chart = spyi_server.api_chart(SPYI_SYMBOL, 'max','1d')
             points = chart.get('points', [])
             if len(points) < 15:
                 raise ValueError('Onvoldoende historische beurskoersen ontvangen')
@@ -101,6 +106,9 @@ class MarketStore:
                       if re.fullmatch(r'\d{4}-\d{2}-\d{2}',str(p.get('date','')))
                       and isinstance(p.get('close'),(float,int)) and p['close']>0]
             if len(points)<15:raise ValueError('Historiek bevat te weinig geldige datapunten')
+            points=sorted({p['date']:p for p in points}.values(),key=lambda p:p['date'])
+            if points[-1]['date']>datetime.now(timezone.utc).date().isoformat():
+                raise ValueError('Historische koersbron bevat datums in de toekomst')
             self._put('history', {'symbol': SPYI_SYMBOL,'source':chart.get('source'),'points':points}, closes=points)
             return points
         except Exception as exc:

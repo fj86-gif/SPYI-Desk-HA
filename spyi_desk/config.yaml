@@ -1,7 +1,7 @@
 name: SPYI Desk
-version: "0.5.0"
+version: "0.6.1"
 slug: spyi_desk
-description: BETA - persoonlijk SPYI-dashboard voor Home Assistant (nog niet productiegetest)
+description: BETA - echte koersdata en historische rendementsvoorstellen
 arch:
   - amd64
 startup: application
@@ -10,6 +10,8 @@ init: false
 ingress: true
 ingress_port: 8099
 ingress_panel: true
+stage: experimental
+backup: cold
 panel_icon: mdi:chart-line
 panel_title: SPYI Desk
 panel_admin: true

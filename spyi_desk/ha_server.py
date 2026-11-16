@@ -53,7 +53,7 @@ def market_get(handler,path):
     route=urlparse(path)
     query=parse_qs(route.query)
     if route.path=='/api/status':
-        handler.reply({'ok':True,'service':'SPYI Desk · HA','version':'0.6.2','market':STORE.status()});return True
+        handler.reply({'ok':True,'service':'SPYI Desk · HA','version':'0.6.3','market':STORE.status()});return True
     if route.path=='/api/quote':
         symbol=query.get('symbol',[SPYI_SYMBOL])[0]
         if symbol==SPYI_SYMBOL:

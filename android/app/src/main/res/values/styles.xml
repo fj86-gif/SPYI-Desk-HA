@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources><style name="SPYITheme" parent="android:style/Theme.Material.Light.NoActionBar">
+  <item name="android:statusBarColor">#102536</item>
+  <item name="android:navigationBarColor">#102536</item>
+  <item name="android:windowLightStatusBar">false</item>
+</style></resources>

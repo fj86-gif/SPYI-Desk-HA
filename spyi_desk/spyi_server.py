@@ -83,12 +83,12 @@ def excel_holdings(content):
     fields={'name':['security name','name','security description','description','company','security'],
         'ticker':['ticker','symbol','local ticker','ric'],
         'isin':['isin','isin code','security identifier'],
-        'sector':['gics sector','sector','sector name'],
-        'country':['country','country of risk','country of domicile'],
+        'sector':['gics sector','sector','sector name','sector classification','gics sector classification'],
+        'country':['country','country of risk','country of domicile','trade country name','trade country','country name','country of incorporation'],
         'currency':['currency','local currency','ccy'],
-        'weight':['weight','weight (%)','weight %','fund weight','portfolio weight','% of fund','weight in fund'],
+        'weight':['weight','weight (%)','weight %','fund weight','portfolio weight','% of fund','percent of fund','% fund','weight in fund','percent of net assets'],
         'price':['local price','price','market price','last price']}
-    def clean(s):return re.sub(r'\s+',' ',str(s or '').strip().lower())
+    def clean(s):return re.sub(r'\s+',' ',str(s or '').replace('\ufeff','').strip().lower())
     def get_float(s):
         if isinstance(s,(int,float)):return float(s)
         try:return float(str(s).replace('%','').replace(' ','').replace(',','.'))
@@ -127,7 +127,7 @@ def excel_holdings(content):
             if 1000<total<10000:
                 for x in data:x['weight']/=100
             return data
-    raise RuntimeError('Geen herkende holdings-tabel. Exporteer de aandelen als CSV met Name, ISIN, Weight.')
+    raise RuntimeError('Geen herkende holdings-tabel in het State Street Excelbestand. Mogelijk is het bestandsformaat gewijzigd; controleer de logboeken van SPYI Desk.')
 
 def pdf_transactions(content):
     """Deliberately conservative extraction: only accept unambiguous 1-line order data.

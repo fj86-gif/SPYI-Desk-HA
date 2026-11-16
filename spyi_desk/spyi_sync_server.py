@@ -7,6 +7,9 @@ from __future__ import annotations
 import argparse
 import hmac
 import json
+import math
+import re
+from datetime import date
 import os
 from pathlib import Path
 import secrets
@@ -55,9 +58,34 @@ def validate(state):
     if not isinstance(state,dict): raise ValueError('Ongeldige staat')
     for k in ('tx','alerts','events'):
         if not isinstance(state.get(k),list): raise ValueError(f'Veld {k} moet een lijst zijn')
-    for t in state['tx']:
-        if not isinstance(t,dict) or not isinstance(t.get('id'),str) or len(t['id'])>160:
-            raise ValueError('Ongeldige transactie')
+    if len(state['tx'])>10000:
+        raise ValueError('Te veel transacties')
+    ids=set()
+    holdings=0.0
+    for t in sorted(state['tx'],key=lambda x: (str(x.get('date','')),0 if x.get('type')=='buy' else 1)):
+        if not isinstance(t,dict) or not isinstance(t.get('id'),str) or not (1<=len(t['id'])<=160) or t['id'] in ids:
+            raise ValueError('Ongeldige of dubbele transactie-ID')
+        ids.add(t['id'])
+        timestamp=t.get('date')
+        if not isinstance(timestamp,str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}',timestamp):
+            raise ValueError('Transactiedatum ontbreekt of is ongeldig')
+        try: trade_date=date.fromisoformat(timestamp)
+        except ValueError: raise ValueError('Ongeldige transactiedatum')
+        if trade_date>date.today():
+            raise ValueError('Transactiedatum ligt in de toekomst')
+        if t.get('type') not in ('buy','sell'):
+            raise ValueError('Ongeldig transactietype')
+        for field in ('shares','price','fees'):
+            value=t.get(field)
+            if isinstance(value,bool) or not isinstance(value,(float,int)) or not math.isfinite(value):
+                raise ValueError('Ongeldig bedrag of aantal aandelen')
+            if (field!='fees' and value<=0) or (field=='fees' and value<0) or value>1e9:
+                raise ValueError('Transactie buiten toegelaten grenzen')
+        if len(str(t.get('note','')))>10000:
+            raise ValueError('Notitie is te lang')
+        holdings+=t['shares']*(1 if t['type']=='buy' else -1)
+        if holdings<-1e-8:
+            raise ValueError('Verkoop overschrijdt het aantal beschikbare aandelen')
     # Market data (quote/holdings/history) are never synchronized as private state.
     for forbidden in ('quote','history','holdings','intraday'):
         if forbidden in state:raise ValueError('Marktgegevens mogen niet in privé-synchronisatie staan')

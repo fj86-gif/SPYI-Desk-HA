@@ -9,3 +9,10 @@ jobs:
         with:
           python-version: '3.12'
       - run: python tests/smoke_test.py
+      - run: pip install openpyxl==3.1.5
+      - run: python tests/market_test.py
+      - run: python -m py_compile spyi_desk/*.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/history_return_test.js

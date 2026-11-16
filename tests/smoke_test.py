@@ -58,6 +58,14 @@ try:
     status,body,_=request(home,'/api/sync/state')
     assert status==200 and json.loads(body)['revision']==1
     print('PASS server rejects invalid transactions without corrupting synced state')
+    updated_state={**state,'monthlyPlan':120}
+    status,body,_=request(home,'/api/sync/state',method='PUT',obj={'baseRevision':1,'state':updated_state})
+    assert status==200 and json.loads(body)['revision']==2
+    snapshot=a.sync.DATA_DIR/'state_versions'/'state_00000001.json'
+    assert snapshot.exists() and json.loads(snapshot.read_text())['revision']==1
+    status,body,_=request(home,'/api/sync/state',method='PUT',obj={'baseRevision':2,'state':updated_state})
+    assert status==200 and json.loads(body)['revision']==2
+    print('PASS rotating private-state snapshots and deduplicated sync writes')
 
     assert a.sync.STATE_PATH.exists()
     with a.STORE.conn() as db: assert db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='market_snapshot'").fetchone()

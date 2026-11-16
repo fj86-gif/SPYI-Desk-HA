@@ -45,6 +45,20 @@ try:
     status,body,_=request(external,'/api/sync/state',headers={'Authorization':'Bearer '+token})
     assert json.loads(body)['state']==state
     print('PASS Cross-device write/read persisted')
+    invalid_examples=[
+      {'tx':[{'id':'x','date':'2999-01-01','type':'buy','shares':1,'price':1.0,'fees':0.0}],'alerts':[],'events':[]},
+      {'tx':[{'id':'x','date':'2020-01-02','type':'sell','shares':1,'price':1.0,'fees':0.0}],'alerts':[],'events':[]},
+      {'tx':[{'id':'x','date':'2020-01-02','type':'buy','shares':1,'price':-1.0,'fees':0.0}],'alerts':[],'events':[]},
+      {'tx':[{'id':'x','date':'2020-01-02','type':'buy','shares':1,'price':1.0,'fees':0.0},
+             {'id':'x','date':'2020-01-03','type':'buy','shares':1,'price':1.0,'fees':0.0}],'alerts':[],'events':[]}
+    ]
+    for invalid in invalid_examples:
+        status,body,_=request(home,'/api/sync/state',method='PUT',obj={'baseRevision':1,'state':invalid})
+        assert status==400, (status,body)
+    status,body,_=request(home,'/api/sync/state')
+    assert status==200 and json.loads(body)['revision']==1
+    print('PASS server rejects invalid transactions without corrupting synced state')
+
     assert a.sync.STATE_PATH.exists()
     with a.STORE.conn() as db: assert db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='market_snapshot'").fetchone()
     print('PASS SQLite initialized')
